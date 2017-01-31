@@ -1,0 +1,12 @@
+<form method="post" id="comment-reply-form">
+	{% csrf_token %}
+	{{comment_reply_form.non_field_errors}}
+	{% for field in comment_reply_form %}
+	<div class="commentFieldWrapper">
+		{{ field }}
+		{{ field.errors }}
+	</div>
+	{% endfor %}
+	<input type="submit" value="Send"/>
+	<button id="cancel-comment">Cancel</button>
+</form>

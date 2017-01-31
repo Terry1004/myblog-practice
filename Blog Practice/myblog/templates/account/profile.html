@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}User Profile{% endblock %}
+{% block content %}
+<h1>Profile</h1>
+<a href="{% url 'account:dashboard' %}">Click here to view dashboard</a>
+<h2>Following:</h2>
+<ul>
+	{% for user_following in following %}
+	<li>{{ user_following.user.username }}</li>
+	{% endfor %}
+</ul>
+</ul>
+<h2>Followed by:</h2>
+<ul>
+	{% for user_followed in followed %}
+	<li>{{ user_followed.user.username }}</li>
+	{% endfor %}
+</ul>
+<ul>
+	{% for blog in blogs %}
+	<li>
+		<p>{{ blog.blog_content }}</p>
+		<a href="{% url 'profiles:public_profile' blog.blog_author.user.username %}">{{ blog.blog_author.user.username }}</a>
+		<p>{{ blog.blog_pub_date }}</p>
+	</li>
+	{% endfor %}
+</ul>
+<a href="{% url 'logout' %}">Log out</a>
+{% endblock %}

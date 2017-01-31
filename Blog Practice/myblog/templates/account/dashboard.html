@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Blog Dashboard{% endblock %}
+{% block script %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="{% static 'account/scripts.js' %}"></script>
+{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+<a href="{% url 'account:profile' %}">Click to view profile</a>
+<form method="post" action="{% url 'account:dashboard' %}">
+	{% csrf_token %}
+	{{blog_form.non_field_errors}}
+	{% for field in blog_form %}
+	<div class="blogFieldWrapper">
+		{{ field }}
+		{{ field.errors }}
+	</div>
+	{% endfor %}
+	<input type="submit" value="Send"/>
+</form>
+<ul id="blogs">
+	{% for blog in blogs %}
+	<li>
+		<div id="blog-box-{{ blog.id }}">
+			<p>{{ blog.blog_content }}</p>
+			<a href="{% url 'profiles:public_profile' blog.blog_author.user.username %}">{{ blog.blog_author.user.username }}</a>
+			<p>{{ blog.blog_pub_date }}</p>
+			<p class="blog-like-count" id="blog-like-count-{{ blog.id }}">{{ blog.like_people.count }}</p>
+			<button class="blog-like" name="{{ blog.id }}">Like</button>
+			<button class="blog-comment" name="{{ blog.id }}">Comment</button>
+			{% if blog.blog_author == profile %}
+			<a href="{% url 'account:edit_blog' blog.id %}">Edit</a>
+			<button class="blog-delete" name="{{ blog.id }}">Delete</button>
+			{% endif %}
+		</div>
+		<div id="all-comments-box-{{ blog.id }}">
+			<ul id="comments-box-{{ blog.id }}">
+				{% for comment in blog.comments.all %}
+				<li>
+					<div id="comment-box-{{ comment.id }}">
+						{% if comment.reply_to %}
+						<p><a href="{% url 'profiles:public_profile' comment.comment_author.user.username %}">
+						{{ comment.comment_author.user.username }}
+						</a> to <a href="{% url 'profiles:public_profile' comment.reply_to.comment_author.user.username %}">
+						{{ comment.reply_to.comment_author.user.username }}
+						</a>: {{ comment.comment_content }}</p>
+						{% else %}
+						<p><a href="{% url 'profiles:public_profile' comment.comment_author.user.username %}">
+						{{ comment.comment_author.user.username }}
+						</a>: {{ comment.comment_content }}</p>
+						{% endif %}
+						<p>{{ comment.comment_pub_date }}</p>
+						<button class="comment-reply" name="{{ comment.id }}">Reply</button>
+						{% if comment.comment_author == profile %}
+						<button class="comment-delete" name="{{ comment.id }}">Delete</button>
+						{% endif %}
+					</div>
+				</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</li>
+	{% endfor %}
+</ul>
+<a href="{% url 'logout' %}">Log out</a>
+{% endblock %}
