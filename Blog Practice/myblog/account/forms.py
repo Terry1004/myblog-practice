@@ -24,3 +24,7 @@ class CreateCommentForm(forms.Form):
 		widget = forms.Textarea)
 	
 
+class EditProfileForm(forms.Form):
+
+	avatar = forms.ImageField()
+

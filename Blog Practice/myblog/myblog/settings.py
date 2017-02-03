@@ -134,3 +134,8 @@ STATICFILES_DIRS = (
 LOGIN_URL = '/'
 
 LOGIN_REDIRECT_URL = '/account/dashboard/'
+
+#Media Root
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = BASE_DIR + '/media/'

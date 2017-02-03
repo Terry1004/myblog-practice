@@ -3,8 +3,12 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 class Profile(models.Model):
+	def get_user_avatar_folder(instance, filename):
+		return "avatars/%s/%s" %(instance.user.username, filename)
+
 	user = models.OneToOneField(User, on_delete = models.CASCADE)
 	follow = models.ManyToManyField('self', symmetrical = False, related_name = 'followed')
+	avatar = models.ImageField(upload_to = get_user_avatar_folder, default = 'avatars/default-avatar.png')
 
 
 class Blog(models.Model):

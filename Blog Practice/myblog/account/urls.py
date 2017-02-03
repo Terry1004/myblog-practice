@@ -10,5 +10,6 @@ urlpatterns = [
 	url(r'^dashboard/ajax/add-comment/$', views.add_comment, name = 'add_comment'),
 	url(r'^dashboard/comment-form/$', views.load_comment_form, name = 'load_comment_form'),
 	url(r'^dashboard/comment-reply-form/$', views.load_comment_reply_form, name = 'load_comment_reply_form'),
-	url(r'^dashboard/ajax/delete-comment/$', views.delete_comment, name = 'delete_comment')
+	url(r'^dashboard/ajax/delete-comment/$', views.delete_comment, name = 'delete_comment'),
+	url(r'^profile-edit/$', views.edit_profile, name = 'edit_profile')
 ]

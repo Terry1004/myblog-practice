@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from .models import Profile, Blog, Comment
-from .forms import CreateBlogForm, CreateCommentForm
+from .forms import CreateBlogForm, CreateCommentForm, EditProfileForm
 from django.db.models import Q
 
 # Create your views here.
@@ -185,6 +185,34 @@ def delete_comment(request):
 		else:
 			response['status'] = 'unauthorized'
 	return JsonResponse(response)
+
+
+@login_required
+def edit_profile(request):
+	user = request.user
+	user_profile = user.profile
+	context = {}
+	user_following_list = user_profile.follow.all()
+	user_followed_list = user_profile.followed.all()
+	context['following'] = user_following_list
+	context['followed'] = user_followed_list
+	if (request.method != 'POST'):
+		form = EditProfileForm()
+		context['form'] = form
+		return render(request, 'account/edit_profile.html', context)
+	else:
+		form = EditProfileForm(request.POST, request.FILES)
+		if (form.is_valid()):
+			user_profile.avatar = form.cleaned_data['avatar']
+			user_profile.save()
+			return HttpResponseRedirect(reverse_lazy('account:profile'))
+		else:
+			context['form'] = form
+			return render(request, 'account/edit_profile.html', context)
+
+
+
+	
 
 
 
