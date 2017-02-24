@@ -12,13 +12,13 @@ class Profile(models.Model):
 
 
 class Blog(models.Model):
-	blog_content = models.TextField(max_length = 140)
+	blog_content = models.TextField(max_length = 1000)
 	blog_pub_date = models.DateTimeField(auto_now = True)
 	like_people = models.ManyToManyField(Profile, related_name = 'like_blogs')
 	blog_author = models.ForeignKey(Profile, on_delete = models.CASCADE)
 
 class Comment(models.Model):
-	comment_content = models.TextField(max_length = 140)
+	comment_content = models.TextField(max_length = 1000)
 	comment_pub_date = models.DateTimeField(auto_now = True)
 	comment_author = models.ForeignKey(Profile, on_delete = models.CASCADE)
 	blog = models.ForeignKey(Blog, on_delete = models.CASCADE, related_name = 'comments')

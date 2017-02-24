@@ -1,16 +1,31 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
-from django.core.validators import RegexValidator
+import re
 
 class RegistrationForm(forms.Form):
-	username_validator = RegexValidator(
-		regex = r'^[\w]+$', 
-		message = 'Username should only contain alphanumeric character and the underscore.', 
-		code = 'invalid_username')
-	username = forms.CharField(label = 'Username', max_length = 20, validators = [username_validator])
-	password = forms.CharField(label = 'Password', max_length = 20, widget = forms.PasswordInput)
-	confirm_password = forms.CharField(label = 'Confirm your password', max_length = 20, widget = forms.PasswordInput)
+
+	username = forms.CharField(
+		label = 'Username', 
+		max_length = 20,  
+		widget = forms.TextInput(attrs = {
+			'class': 'form-control',
+			'placeholder': 'Username'
+			}))
+	password = forms.CharField(
+		label = 'Password', 
+		max_length = 20, 
+		widget = forms.PasswordInput(attrs = {
+			'class': 'form-control',
+			'placeholder': 'Password'
+			}))
+	confirm_password = forms.CharField(
+		label = 'Confirm your password', 
+		max_length = 20, 
+		widget = forms.PasswordInput(attrs = {
+			'class': 'form-control',
+			'placeholder': 'Confirm password'
+		}))
 
 	def clean(self):
 		cleaned_data = super(RegistrationForm, self).clean()
@@ -23,10 +38,11 @@ class RegistrationForm(forms.Form):
 			pass
 		else:
 			if (user is not None):
-				error = forms.ValidationError(_('The username has been registered.'), code = 'duplicate_username')
-				self.add_error('username', error)
+				raise forms.ValidationError(_('The username has been registered.'), code = 'duplicate_username')
 		finally:
-			if (password1 != password2):
-				error = forms.ValidationError(_('You have entered different passwords.'), code = 'inequal_password')
-				self.add_error('password', error)
+			pattern = re.compile('^([\w]+)$')
+			if (not pattern.match(user_name)):
+				raise forms.ValidationError(_('Username should only contain alphanumeric character and the underscore.'), code = 'invalid_username')
+			elif (password1 != password2):
+				raise forms.ValidationError(_('You have entered different passwords.'), code = 'inequal_password')
 			return cleaned_data

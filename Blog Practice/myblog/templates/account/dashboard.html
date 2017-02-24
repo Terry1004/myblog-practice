@@ -1,67 +1,138 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}Blog Dashboard{% endblock %}
+{% block link %}
+<link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'account/dashboard_styles.css' %}"/>
+{% endblock %}
 {% block script %}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src="{% static 'account/scripts.js' %}"></script>
+<script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+<script src="{% static 'account/dashboard_scripts.js' %}"></script>
 {% endblock %}
 {% block content %}
-<h1>Dashboard</h1>
-<a href="{% url 'account:profile' %}">Click to view profile</a>
-<form method="post" action="{% url 'account:dashboard' %}">
-	{% csrf_token %}
-	{{blog_form.non_field_errors}}
-	{% for field in blog_form %}
-	<div class="blogFieldWrapper">
-		{{ field }}
-		{{ field.errors }}
-	</div>
-	{% endfor %}
-	<input type="submit" value="Send"/>
-</form>
-<ul id="blogs">
-	{% for blog in blogs %}
-	<li>
-		<div id="blog-box-{{ blog.id }}">
-			<p>{{ blog.blog_content }}</p>
-			<a href="{% url 'profiles:public_profile' blog.blog_author.user.username %}">{{ blog.blog_author.user.username }}</a>
-			<p>{{ blog.blog_pub_date }}</p>
-			<p class="blog-like-count" id="blog-like-count-{{ blog.id }}">{{ blog.like_people.count }}</p>
-			<button class="blog-like" name="{{ blog.id }}">Like</button>
-			<button class="blog-comment" name="{{ blog.id }}">Comment</button>
-			{% if blog.blog_author == profile %}
-			<a href="{% url 'account:edit_blog' blog.id %}">Edit</a>
-			<button class="blog-delete" name="{{ blog.id }}">Delete</button>
-			{% endif %}
-		</div>
-		<div id="all-comments-box-{{ blog.id }}">
-			<ul id="comments-box-{{ blog.id }}">
-				{% for comment in blog.comments.all %}
-				<li>
-					<div id="comment-box-{{ comment.id }}">
-						{% if comment.reply_to %}
-						<p><a href="{% url 'profiles:public_profile' comment.comment_author.user.username %}">
-						{{ comment.comment_author.user.username }}
-						</a> to <a href="{% url 'profiles:public_profile' comment.reply_to.comment_author.user.username %}">
-						{{ comment.reply_to.comment_author.user.username }}
-						</a>: {{ comment.comment_content }}</p>
-						{% else %}
-						<p><a href="{% url 'profiles:public_profile' comment.comment_author.user.username %}">
-						{{ comment.comment_author.user.username }}
-						</a>: {{ comment.comment_content }}</p>
-						{% endif %}
-						<p>{{ comment.comment_pub_date }}</p>
-						<button class="comment-reply" name="{{ comment.id }}">Reply</button>
-						{% if comment.comment_author == profile %}
-						<button class="comment-delete" name="{{ comment.id }}">Delete</button>
-						{% endif %}
+
+<div id="nav-wrapper">
+	<nav class="navbar navbar-default navbar-custom">
+		<div class="container-fuild">
+			<div class="navbar-header">
+				<div id="brand-icon-wrapper" class="center">
+					<i id="brand-icon" class="fa fa-telegram fa-3x" aria-hidden="true"></i>
+				</div>
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mobile-navbar" aria-expanded="false">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+			</div>
+			<div class="collapse navbar-collapse" id="mobile-navbar">
+				<form id="search-form" class="navbar-form navbar-left">
+					<div class="form-group">
+						<input type="text" class="form-control" placeholder="Search">
 					</div>
-				</li>
-				{% endfor %}
-			</ul>
+					<button type="submit" class="btn btn-default">Submit</button>
+				</form>
+				<ul id="nav-links" class="nav navbar-nav navbar-right">
+					<li><a href="{% url 'account:dashboard' %}"><i class="fa fa-home" aria-hidden="true"></i>Dashboard</a></li>
+					<li><a href="{% url 'account:profile' %}"><i class="fa fa-user-circle" aria-hidden="true"></i>Profile</a></li>
+					<li><a href="{% url 'logout' %}"><i class="fa fa-sign-out" aria-hidden="true"></i>Logout</a></li>
+					<li><a href="#blog-post"><i class="fa fa-pencil" aria-hidden="true"></i>Post</a></li>
+				</ul>
+			</div>
 		</div>
-	</li>
-	{% endfor %}
-</ul>
-<a href="{% url 'logout' %}">Log out</a>
+	</nav>
+</div>
+<div class="container-fluid full-height">
+	<div class="row full-height">
+		<div id="blog-container" class="col-12 col-md-7 col-md-offset-2 full-height">
+			<div class="row">
+				<div class="col-sm-10 col-sm-offset-1 col-xs-12">
+					<div id="blog-post" class="row">
+						<img src="{{ profile.avatar.url }}" class="img-rounded" height="90" width="90">
+						<div id="blog-post-form-wrapper" class="col-sm-9 col-xs-12">
+							<form id="blog-post-form" method="post" action="{% url 'account:dashboard' %}">
+								{% csrf_token %}
+								{{blog_form.non_field_errors}}
+								{% for field in blog_form %}
+								<div class="blog-field-wrapper">
+									{{ field }}
+									{{ field.errors }}
+								</div>
+								{% endfor %}
+								<button type="submit" class="btn btn-primary" value="Send"/>Send</button>
+							</form>
+						</div>
+					</div>
+					<div id="blogs">
+						{% for blog in blogs %}
+						<div>
+							<div id="blog-box-{{ blog.id }}" class="blog-box row">
+								<img src="{{ blog.blog_author.avatar.url }}" class="img-rounded" height="90" width="90">
+								<div id="blog-wrapper" class="col-sm-9 col-xs-12">
+									<p class="blog-header">
+										<a href="{% url 'profiles:public_profile' blog.blog_author.user.username %}">{{ blog.blog_author.user.username }}</a>
+									</p>
+									<p class="blog-content">{{ blog.blog_content }}</p>
+									<div class="blog-footer">
+										<div class="row">
+											<div class="col-xs-9 col-sm-4 col-md-5">
+												<div class="row">
+													<div class="col-xs-3">
+														<i class="fa fa-thumbs-up blog-like {% if profile in blog.like_people.all %}like{% endif %}" name="{{ blog.id }}" aria-hidden="true"></i>
+														<span class="blog-like-count" id="blog-like-count-{{ blog.id }}">{{ blog.like_people.count }}</span>
+													</div>
+													<div class="col-xs-3">
+														<i class="fa fa-comments blog-comment"  name="{{ blog.id }}" aria-hidden="true"></i>
+													</div>
+													{% if blog.blog_author == profile %}
+													<div class="col-xs-3">
+														<a href="{% url 'account:edit_blog' blog.id %}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+													</div>
+													<div class="col-xs-3">
+														<i class="fa fa-trash blog-delete" name="{{ blog.id }}" aria-hidden="true"></i>
+													</div>
+												</div>
+											</div>
+											<span>{{ blog.blog_pub_date | date:"d N Y H:i" }}</span>
+										</div>
+									</div>
+									{% endif %}
+								</div>
+							</div>
+							<div id="all-comments-box-{{ blog.id }}">
+								<ul id="comments-box-{{ blog.id }}">
+									{% for comment in blog.comments.all %}
+									<li>
+										<div id="comment-box-{{ comment.id }}">
+											{% if comment.reply_to %}
+											<p><a href="{% url 'profiles:public_profile' comment.comment_author.user.username %}">
+												{{ comment.comment_author.user.username }}</a>
+												to <a href="{% url 'profiles:public_profile' comment.reply_to.comment_author.user.username %}">
+												{{ comment.reply_to.comment_author.user.username }}</a>
+												: {{ comment.comment_content }}
+											</p>
+											{% else %}
+											<p><a href="{% url 'profiles:public_profile' comment.comment_author.user.username %}">
+												{{ comment.comment_author.user.username }}</a>
+												: {{ comment.comment_content }}
+											</p>
+											{% endif %}
+											<p>{{ comment.comment_pub_date }}</p>
+											<button class="comment-reply" name="{{ comment.id }}">Reply</button>
+											{% if comment.comment_author == profile %}
+											<button class="comment-delete" name="{{ comment.id }}">Delete</button>
+											{% endif %}
+										</div>
+									</li>
+									{% endfor %}
+								</ul>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 {% endblock %}

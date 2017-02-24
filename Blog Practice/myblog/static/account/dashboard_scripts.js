@@ -62,12 +62,10 @@ $(function(){
 			success: function(data){
 				if (data["status"] == "like"){
 					$(this).addClass("like");
-					$(this).text("Unlike");
 					alert("You have liked this blog!");
 				}
 				else if (data["status"] == "unlike"){
 					$(this).removeClass("like");
-					$(this).text("Like");
 					alert("You have unliked this blog!");
 				}
 				else if (data["status"] == "unauthorized"){
