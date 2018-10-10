@@ -1,2 +1,2 @@
 # myblog-practice
-First time making a web application. This is for practice. 
+First time making a web application.
